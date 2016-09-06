@@ -12,14 +12,11 @@ import static java.lang.Math.*;
  * Created by Jeka on 05/09/2016.
  */
 public class Main {
+    private static String str;
+
     public static void main(String[] args) {
-        List<Object> objects = new ArrayList<>();
-
-        Random random = new Random();
-        int i = random.nextInt(10);
-
-        String s = JOptionPane.showInputDialog("give me your number");
-        System.out.println("s = " + s);
-
+        for (String arg : args) {
+            str += arg;
+        }
     }
 }
