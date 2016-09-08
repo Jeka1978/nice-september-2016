@@ -2,15 +2,14 @@ package java8;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Created by Jeka on 06/09/2016.
  */
 public class ListUtil {
-    public static <T> void forEachWithDelay(int delay, List<T> list, Consumer<T> consumer) throws InterruptedException {
+    public static <T> void forEachWithDelay(int delay, List<T> list, Algorithm algorithm) throws InterruptedException {
         for (T t1 : list) {
-            consumer.accept(t1);
+            algorithm.doSomething(t1);
             Thread.sleep(delay);
         }
     }
