@@ -59,7 +59,7 @@ public class ObjectFactory {
             if (impl == null) {
                 Set<Class<? extends T>> classes = scanner.getSubTypesOf(type);
                 if (classes.size() != 1) {
-                    throw new RuntimeException("you have zero o more than one impl of " + type + " please bind needed impl your config");
+                    throw new RuntimeException("you have zero or more than one impl of " + type + " please bind needed impl your config");
                 }
                 type = (Class<T>) classes.iterator().next();
             }else {

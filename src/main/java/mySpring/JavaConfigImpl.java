@@ -6,7 +6,8 @@ package mySpring;
 public class JavaConfigImpl extends JavaConfig {
     @Override
     protected void configure() {
-        addBinding(Speaker.class,PopupSpeaker.class);
+        addBinding(Speaker.class,ConsoleSpeaker.class);
+        addBinding(Cleaner.class,PowerCleaner.class);
 
     }
 }
