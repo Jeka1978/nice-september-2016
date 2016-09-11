@@ -75,20 +75,20 @@ public class ObjectFactory {
 
 
     private <T> Class<T> resolveImpl(Class<T> type) {
-        if (type.isInterface()) {
-            Class<T> impl = config.getImpl(type);
-            if (impl == null) {
-                Set<Class<? extends T>> classes = scanner.getSubTypesOf(type);
-                if (classes.size() != 1) {
-                    throw new RuntimeException("you have zero or more than one impl of " + type + " please bind needed impl your config");
-                }
-                type = (Class<T>) classes.iterator().next();
-            }else {
-                type = impl;
-            }
+        if (!type.isInterface()) {
+            return type;
         }
-        return type;
+
+        Class<T> impl = config.getImpl(type);
+        if (impl != null) {
+            return impl;
+        }
+
+        Set<Class<? extends T>> classes = scanner.getSubTypesOf(type);
+        if (classes.size() != 1) {
+            throw new RuntimeException("you have zero or more than one impl of " + type + " please bind needed impl your config");
+        }
+
+        return (Class<T>) classes.iterator().next();
     }
-
-
 }
