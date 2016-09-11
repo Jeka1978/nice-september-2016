@@ -3,7 +3,8 @@ package mySpring;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
-import java.lang.reflect.Field;
+import javax.annotation.PostConstruct;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +18,7 @@ public class ObjectFactory {
     private Config config = new JavaConfigImpl();
     private Reflections scanner = new Reflections();
     private List<ObjectConfigurer> objectConfigurers = new ArrayList<>();
+    private List<ProxyConfigurer> proxyConfigurers = new ArrayList<>();
 
     public static ObjectFactory getInstance() {
         return ourInstance;
@@ -27,7 +29,10 @@ public class ObjectFactory {
         Set<Class<? extends ObjectConfigurer>> classes = scanner.getSubTypesOf(ObjectConfigurer.class);
         for (Class<? extends ObjectConfigurer> c : classes) {
             objectConfigurers.add(c.newInstance());
-
+        }
+        Set<Class<? extends ProxyConfigurer>> set = scanner.getSubTypesOf(ProxyConfigurer.class);
+        for (Class<? extends ProxyConfigurer> aClass : set) {
+            proxyConfigurers.add(aClass.newInstance());
         }
     }
 
@@ -36,6 +41,8 @@ public class ObjectFactory {
         type = resolveImpl(type);
         T t = type.newInstance();
         configure(t);
+        invokeInitMethods(type, t);
+        t = configureProxyIfNeed(type, t);
         return t;
 
     }
@@ -45,7 +52,21 @@ public class ObjectFactory {
 
 
 
+    private <T> T configureProxyIfNeed(Class<T> type, T t) {
+        for (ProxyConfigurer proxyConfigurer : proxyConfigurers) {
+            t = proxyConfigurer.configureProxy(t,type);
+        }
+        return t;
+    }
 
+    private <T> void invokeInitMethods(Class<T> type, T t) throws IllegalAccessException, InvocationTargetException {
+        Method[] methods = type.getMethods();
+        for (Method method : methods) {
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                method.invoke(t);
+            }
+        }
+    }
 
 
     private <T> void configure(T t) {
